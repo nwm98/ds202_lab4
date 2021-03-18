@@ -15,17 +15,33 @@ Although the three Excel sheets are loaded into R, they are not useful before
 some cleaning. Manipulate the three imported data frames, so that in the cleaned dataset:
 
 1.The player names and opponent names are factors.
-
-  Answer:
   
 2.All offensive and defensive statistics are numerical. The `Weight` column in biography is also numeric. (Optional: Read `?across` and learn to mutate multiple columns simultaneously using the `across` function in `dplyr`)
-
-  Answer:
   
 3.Change the `Height` column in biography into numeric. (Hint: Use a unit that works well)
 
-  Answer:
-  
+
+```{r}
+# Q1 pt2
+defense <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Defensive')
+defclean <- defense %>%
+  mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+
+offense <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Offensive')
+offclean <- offense %>%
+  mutate(across(Receiving_REC:Passing_INT, as.numeric))
+
+#Q1 pt3
+biography <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Biography')
+bioclean <- biography %>% separate(Height, c('feet','inches'), "-",convert = TRUE)%>% mutate(Total_Inches = (12*feet)+inches)
+
+#Q1 pt1
+factor(defclean$Name)
+factor(defclean$Opponent_Opponent)
+factor(offclean$Opponent_Opponent)
+factor(offclean$Name)
+factor(bioclean$Name)
+```  
 
 ## Part two: Tidying
 
