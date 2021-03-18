@@ -16,16 +16,47 @@ some cleaning. Manipulate the three imported data frames, so that in the cleaned
 
 1.The player names and opponent names are factors.
 
-  Answer:
-  
 2.All offensive and defensive statistics are numerical. The `Weight` column in biography is also numeric. (Optional: Read `?across` and learn to mutate multiple columns simultaneously using the `across` function in `dplyr`)
 
-  Answer:
-  
 3.Change the `Height` column in biography into numeric. (Hint: Use a unit that works well)
 
-  Answer:
-  
+  Answer for the Part 1 Questions:
+  ```{r}
+  library(readxl) 
+library(dplyr)
+library(tidyr)
+defense <- read_excel('/Users/nathanmarquardt/Desktop/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Defensive')
+offense <- read_excel('/Users/nathanmarquardt/Desktop/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Offensive')
+biography <- read_excel('/Users/nathanmarquardt/Desktop/ds202_lab4/cyclonesFootball2020.xlsx', sheet='Biography')
+str(defense)
+?across
+
+#Part 1 Question 1
+isuOffPlayers <- factor(offense$Name)
+isuOffOpponents <- factor(offense$Opponent_Opponent)
+
+isuDefPlayers <- factor(defense$Name)
+isuDefOpponents <- factor(defense$Opponent_Opponent)
+
+
+#Part 1 Question 2
+defClean <- defense %>%
+                mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+
+
+offClean <- offense %>%
+  mutate(across(Receiving_REC:Passing_INT, na.rm = TRUE, as.numeric))
+
+
+#Part 1 Question 3
+bioClean <- biography %>%
+              separate(Height, c('feet', 'inches'), "-", convert = TRUE) %>%
+                mutate(Total_Inches = (12 * feet) + inches)
+                
+str(offClean)
+str(defClean)
+str(bioClean)
+```  
 
 ## Part two: Tidying
 
