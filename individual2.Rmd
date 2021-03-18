@@ -4,20 +4,26 @@ author: "Mike Brown"
 date: "3/16/2021"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
+  
+  ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+```{r}
+library(dplyr)
+library(readxl)
+library(ggplot2)
+library(classdata)
+library(tidyverse)
+```
 ## Part one: Cleaning Data
 
 Although the three Excel sheets are loaded into R, they are not useful before
 some cleaning. Manipulate the three imported data frames, so that in the cleaned dataset:
+  
+  1.The player names and opponent names are factors.
 
-1.The player names and opponent names are factors.
-  
 2.All offensive and defensive statistics are numerical. The `Weight` column in biography is also numeric. (Optional: Read `?across` and learn to mutate multiple columns simultaneously using the `across` function in `dplyr`)
-  
+
 3.Change the `Height` column in biography into numeric. (Hint: Use a unit that works well)
 
 
@@ -52,37 +58,127 @@ For the following questions, work on the cleaned data frames `defClean`, `offCle
 
 1.Reformat the `offClean` data frame into a tidy format using `pivot_longer`. The type of statistic (Receiving_REC for the number of receivings, Receiving_YDS for receiving yards) is added as a new key column named `stat`.
 
-  Answer:
-  
+Answer: 
+  ```{r}
+offpvt <- pivot_longer(offclean,Receiving_REC:Passing_INT, names_to= 'stat', values_to='scale')
+head(offpvt)
+```
+
 2.Show on the distributions of the offensive statistics. The distribution of each offensive statistic should be shown in a separate facet. Explain the patterns you see.
 
-  Answer:
-  
+Answer:
+  ```{r}
+ggplot(aes(x=Opponent_Opponent, y=scale), data=offpvt) + geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))+facet_grid(Name~stat)
+```
+
+The graph is zoomed out so far that it is hard to notice most of the points in each graph, but in others it is clear that this graph is displaying stats per game. There appears to be a spike in most stats for the first three games listed in each graph. Statistically people who don't have that many yards throughout the season, had more when Brock Purdy threw for more passing yards.
+
 3.Did ISU have better offensive against Oregon or Oklahoma? Answer this question by creating a scatterplot with the x- and y-axes being the receiving yards of the ISU players against these two opponents. A large number of receiving yards indicates good offense.
 
   Answer:
-  
+```{r}
+  oo <- filter(offpvt, (Opponent_Opponent == "Oklahoma"| Opponent_Opponent=="Oregon") & stat=="Receiving_YDS")
+
+okla <- filter(oo, Opponent_Opponent=="Oklahoma") %>% group_by(Name,stat,Opponent_Opponent) %>% summarise(avg=mean(scale, na.rm=TRUE))
+
+ore <- filter(oo, Opponent_Opponent=="Oregon") %>% group_by(Name,stat,Opponent_Opponent) %>% summarise(avg=mean(scale, na.rm=TRUE))
+oklaore <- full_join(okla,ore)
+ggplot(aes(x=Name, y=avg,color=Opponent_Opponent), data=oklaore)+xlab("Player Name")+ylab("Average Receiving Yards") + ggtitle("Average Rec. Yards per Player for OK vs OR") +geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))
+```
 Now turn our attention to the player biography.
 
 4.Separate the `Hometown` column into two columns, namely, the city and the state where the player comes from. Print the fiers twe rows of these two columns. (Hint: look at the `sep=` argument of `separate`)
 
   Answer:
-  
+```{r}
+bioclean2 <- separate(bioclean, Hometown, into = c("City","State"), ",")
+bioclean3 <- bioclean2 %>% select(City, State)
+head(bioclean3, n=2)
+```
 5.How many players are there from each state?
 
   Answer:
-  
-
+```{r}
+hmtwncnt <- bioclean2 %>% group_by(State) %>% summarise(count = n())
+head(hmtwncnt)
+```
 ## Part three: Joining data frames
 
 1.Find which states do the ISU players (both defensive and offensive) come from. Create an appropriate numerical or graphical summary.
 
   Answer:
-  
+```{r}
+table(hmtwncnt$State)
+```
+Michigan is recorded twice as "Mich" and "Mich."
+
 2.How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?
 
   Answer:
-  
+```{r}
+team <- full_join(offclean,defclean)
+brock <- filter(team, Name=="Purdy, Brock" & Passing_YDS>=250 & Passing_TD>=1 & Passing_INT <= 1)
+defpvt <- pivot_longer(defclean,Tackles_Solo:Pass_PB, names_to= 'stat', values_to='scale')
+isudefense <- filter(defpvt, Opponent_Opponent == "Oklahoma"|Opponent_Opponent =="Texas"|Opponent_Opponent =="Texas Tech")
+isudefstat <- isudefense %>% group_by(Opponent_Opponent,stat) %>% summarise(avg_mean=mean(scale,na.rm=TRUE))
+isudefstattotal <- defpvt %>% group_by(Opponent_Opponent,stat) %>% summarise(avg_mean=mean(scale,na.rm=TRUE))
+isudefstattotal2 <- isudefstattotal %>% filter(Opponent_Opponent != "Oklahoma" & Opponent_Opponent!="Texas Tech" & Opponent_Opponent != "Texas")
+
+ggplot(aes(x=stat, y=avg_mean, color=Opponent_Opponent), data=isudefstat)+geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))
+ggplot(aes(x=stat, y=avg_mean, color=Opponent_Opponent), data=isudefstattotal2)+geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))
+```
+We identified a good game for Brock Purdy as a game where he threw for more than 250 yards, scored at least one touchdown, and threw at most 1 interception. We identified those games as the ones against Oklahoma, Texas and Texas Tech. We made two graphs showing how the defense played for his good games and one for the other games and it is evident that the defense performs better when Brock is not having a good game. This could possibly be due to them being on the field more because the offense wasn't doing as well and weren't able to possess the ball as long.  
+
+```{r}
+offpvt <- pivot_longer(offclean,Receiving_REC:Passing_INT, names_to= 'stat', values_to='scale')
+running <- filter(offpvt, stat=="Rushing_ATT" | stat=="Rushing_YDS" | stat=="Rushing_TD")
+isurunb <- filter(running, Opponent_Opponent == "Oklahoma"|Opponent_Opponent =="Texas"|Opponent_Opponent =="Texas Tech")
+
+isuoffstat <- isurunb %>% group_by(Opponent_Opponent,stat) %>% summarise(avg_mean=mean(scale,na.rm=TRUE))
+isuoffstattotal <- running %>% group_by(Opponent_Opponent,stat) %>% summarise(avg_mean=mean(scale,na.rm=TRUE))
+isuoffstattotal2 <- isuoffstattotal %>% filter(Opponent_Opponent != "Oklahoma" & Opponent_Opponent!="Texas Tech" & Opponent_Opponent != "Texas")
+
+ggplot(aes(x=stat, y=avg_mean, color=Opponent_Opponent), data=isuoffstat)+geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))
+ggplot(aes(x=stat, y=avg_mean, color=Opponent_Opponent), data=isuoffstattotal2)+geom_point()+theme(axis.text.x=element_text(angle=90, hjust=1))  
+```
+It follows that when Brock does well the wide receivers will also do well since he has to throw to them so we decided to compare his stats to the rushing averages. In these two graphs we can see that the rushing game is not really affected by Brock's good or not good games.
+
 3.Which ISU player(s) made the biggest progress over the last year? Compare the player-level statistics (i.e. averages and totals for each player) using both the 2020 and the 2019 data here. Choose for yourself the player statistics to investigate.
 
-  Answer:
+Answer:
+  ```{r}
+defense19 <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2019.xlsx", sheet='Defensive')
+offense19 <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2019.xlsx", sheet='Offensive')
+
+defense20 <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Defensive')
+offense20 <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Offensive')
+
+offclean19 <- offense19 %>%
+  mutate(across(Receiving_REC:Passing_INT, as.numeric))
+defclean19 <- defense19 %>%
+  mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+defclean <- defense20 %>%
+  mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+offclean <- offense20 %>%
+  mutate(across(Receiving_REC:Passing_INT, as.numeric))
+offpvt <- pivot_longer(offclean,Receiving_REC:Passing_INT, names_to= 'stat', values_to='scale')
+defpvt <- pivot_longer(defclean,Tackles_Solo:Pass_PB, names_to= 'stat', values_to='scale')
+offpvt19 <- pivot_longer(offclean19,Receiving_REC:Passing_INT, names_to= 'stat', values_to='scale19')
+defpvt19 <- pivot_longer(defclean19,Tackles_Solo:Pass_PB, names_to= 'stat', values_to='scale19')
+
+defstats19 <- defpvt19 %>% group_by(Name, stat) %>% summarise(avg_mean19=mean(scale19, na.rm = TRUE))
+offstats19 <- offpvt19 %>% group_by(Name, stat) %>% summarise(avg_mean19=mean(scale19, na.rm = TRUE))
+defstats20 <- defpvt %>% group_by(Name, stat) %>% summarise(avg_mean=mean(scale, na.rm = TRUE))
+offstats20 <- offpvt %>% group_by(Name, stat) %>% summarise(avg_mean=mean(scale, na.rm = TRUE))
+
+defjoin <- full_join(defstats19,defstats20, by =c('Name', 'stat'))
+offjoin <- full_join(offstats19,offstats20, by =c('Name', 'stat'))
+
+ggplot(aes(x=stat,y=(avg_mean - avg_mean19)), data=defjoin)+geom_point()+facet_wrap(~Name)+theme(axis.text.x=element_text(angle=90, hjust=1))
+```
+Based off of the differences in averages from 2019 to 2020 seasons the three defensive players who had the greatest increases in stats were Mike Rose, JaQuan Bailey and Jake Hummel.
+
+```{r}
+ggplot(aes(x=stat,y=(avg_mean - avg_mean19)), data=offjoin)+geom_point()+facet_wrap(~Name)+theme(axis.text.x=element_text(angle=90, hjust=1))
+```
+The four offensive players that had the greatest improvement in stats were, Landen Akers, Chase Allen, Charlie Kolar, and Dylan Soehner. Three of these players happened to play the tight end position. With that in mind we'd say that the tight end position in general had the greatest offensive improvement.
