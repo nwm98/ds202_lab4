@@ -87,7 +87,7 @@ ggplot(aes(x=Name, y=avg,color=Opponent_Opponent), data=oklaore)+xlab("Player Na
 ```
 Now turn our attention to the player biography.
 
-4.Separate the `Hometown` column into two columns, namely, the city and the state where the player comes from. Print the fiers twe rows of these two columns. (Hint: look at the `sep=` argument of `separate`)
+4.Separate the `Hometown` column into two columns, namely, the city and the state where the player comes from. Print the first two rows of these two columns. (Hint: look at the `sep=` argument of `separate`)
 
   Answer:
 ```{r}

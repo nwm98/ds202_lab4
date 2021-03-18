@@ -298,25 +298,25 @@ str(offClean)</code></pre>
 <h2>Part two: Tidying</h2>
 <p>For the following questions, work on the cleaned data frames <code>defClean</code>, <code>offClean</code>, and <code>bioClean</code>.</p>
 <p>1.Reformat the <code>offClean</code> data frame into a tidy format using <code>pivot_longer</code>. The type of statistic (Receiving_REC for the number of receivings, Receiving_YDS for receiving yards) is added as a new key column named <code>stat</code>.</p>
-<p>Answer:</p>
+<p>Answer: pivot longer to show a stat column and a scale column</p>
 <p>2.Show on the distributions of the offensive statistics. The distribution of each offensive statistic should be shown in a separate facet. Explain the patterns you see.</p>
-<p>Answer:</p>
+<p>Answer: Facet Grid for player by game with the stat and the value. Use a scatterplot</p>
 <p>3.Did ISU have better offensive against Oregon or Oklahoma? Answer this question by creating a scatterplot with the x- and y-axes being the receiving yards of the ISU players against these two opponents. A large number of receiving yards indicates good offense.</p>
-<p>Answer:</p>
+<p>Answer: Get the average stats for the Oklahoma game and then Compare those to the Oregon game.</p>
 <p>Now turn our attention to the player biography.</p>
-<p>4.Separate the <code>Hometown</code> column into two columns, namely, the city and the state where the player comes from. Print the fiers twe rows of these two columns. (Hint: look at the <code>sep=</code> argument of <code>separate</code>)</p>
-<p>Answer:</p>
+<p>4.Separate the <code>Hometown</code> column into two columns, namely, the city and the state where the player comes from. Print the first two rows of these two columns. (Hint: look at the <code>sep=</code> argument of <code>separate</code>)</p>
+<p>Answer: Can separate by comma and then make a City column and a State Column</p>
 <p>5.How many players are there from each state?</p>
-<p>Answer:</p>
+<p>Answer: Do a summarize with a count for the new State column</p>
 </div>
 <div id="part-three-joining-data-frames" class="section level2">
 <h2>Part three: Joining data frames</h2>
 <p>1.Find which states do the ISU players (both defensive and offensive) come from. Create an appropriate numerical or graphical summary.</p>
-<p>Answer:</p>
+<p>Answer: Show the states via table for what states the players came from. Use table values of state from question 4</p>
 <p>2.How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?</p>
-<p>Answer:</p>
+<p>Answer: What is a good game? Brock throws for over 200 yrds, throws &gt;= 2 TDs, &lt; 2 Interceptions Filter out those games and see how the defense and run game did.</p>
 <p>3.Which ISU player(s) made the biggest progress over the last year? Compare the player-level statistics (i.e. averages and totals for each player) using both the 2020 and the 2019 data here. Choose for yourself the player statistics to investigate.</p>
-<p>Answer:</p>
+<p>Answer: Find statistical averages from 2019 and compare those to 2020. See who had the biggest jumps on offense and defense.</p>
 </div>
 
 

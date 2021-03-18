@@ -65,36 +65,45 @@ For the following questions, work on the cleaned data frames `defClean`, `offCle
 1.Reformat the `offClean` data frame into a tidy format using `pivot_longer`. The type of statistic (Receiving_REC for the number of receivings, Receiving_YDS for receiving yards) is added as a new key column named `stat`.
 
   Answer:
+  pivot longer to show a stat column and a scale column
   
 2.Show on the distributions of the offensive statistics. The distribution of each offensive statistic should be shown in a separate facet. Explain the patterns you see.
 
   Answer:
+  Facet Grid for player by game with the stat and the value. Use a scatterplot
   
 3.Did ISU have better offensive against Oregon or Oklahoma? Answer this question by creating a scatterplot with the x- and y-axes being the receiving yards of the ISU players against these two opponents. A large number of receiving yards indicates good offense.
 
   Answer:
+  Get the average stats for the Oklahoma game and then Compare those to the Oregon game. 
   
 Now turn our attention to the player biography.
 
-4.Separate the `Hometown` column into two columns, namely, the city and the state where the player comes from. Print the fiers twe rows of these two columns. (Hint: look at the `sep=` argument of `separate`)
+4.Separate the `Hometown` column into two columns, namely, the city and the state where the player comes from. Print the first two rows of these two columns. (Hint: look at the `sep=` argument of `separate`)
 
   Answer:
+  Can separate by comma and then make a City column and a State Column
   
 5.How many players are there from each state?
 
   Answer:
-  
+  Do a summarize with a count for the new State column
 
 ## Part three: Joining data frames
 
 1.Find which states do the ISU players (both defensive and offensive) come from. Create an appropriate numerical or graphical summary.
 
   Answer:
+  Show the states via table for what states the players came from.
+  Use table values of state from question 4
   
 2.How does the performance of quarterback Brock Purdy relate to the performance of the ISU team?
 
   Answer:
+  What is a good game? Brock throws for over 200 yrds, throws >= 2 TDs,  < 2 Interceptions
+  Filter out those games and see how the defense and run game did. 
   
 3.Which ISU player(s) made the biggest progress over the last year? Compare the player-level statistics (i.e. averages and totals for each player) using both the 2020 and the 2019 data here. Choose for yourself the player statistics to investigate.
 
   Answer:
+  Find statistical averages from 2019  and compare those to 2020. See who had the biggest jumps on offense and defense. 
