@@ -26,14 +26,17 @@ some cleaning. Manipulate the three imported data frames, so that in the cleaned
 defense <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Defensive')
 defclean <- defense %>%
   mutate(across(Tackles_Solo:Pass_PB, as.numeric))
+str(defclean)
 
 offense <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Offensive')
 offclean <- offense %>%
   mutate(across(Receiving_REC:Passing_INT, as.numeric))
+str(offclean)
 
 #Q1 pt3
 biography <- read_xlsx("C:/Users/brown/OneDrive/Desktop/DS202/ds202_lab4/cyclonesFootball2020.xlsx", sheet='Biography')
 bioclean <- biography %>% separate(Height, c('feet','inches'), "-",convert = TRUE)%>% mutate(Total_Inches = (12*feet)+inches)
+str(bioclean)
 
 #Q1 pt1
 factor(defclean$Name)
